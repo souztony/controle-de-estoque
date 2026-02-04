@@ -1,0 +1,15 @@
+# Node
+node_modules/
+build/
+dist/
+
+# Quarkus / Java
+target/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
