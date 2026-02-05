@@ -12,4 +12,12 @@ public class RawMaterial extends PanacheEntity {
     
     @Column(name = "stock_quantity")
     public Double stockQuantity;
+
+    public RawMaterial() {}
+
+    public RawMaterial(Long id, String name, double stockQuantity) {
+        this.id = id;
+        this.name = name;
+        this.stockQuantity = stockQuantity;
+    }
 }

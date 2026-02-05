@@ -18,4 +18,12 @@ public class ProductComponent extends PanacheEntity {
     public RawMaterial rawMaterial;
     
     public Double required_quantity;
+
+    public ProductComponent() {}
+
+    public ProductComponent(RawMaterial rawMaterial, Product product, double required_quantity) {
+        this.rawMaterial = rawMaterial;
+        this.product = product;
+        this.required_quantity = required_quantity;
+    }
 }
