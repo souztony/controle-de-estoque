@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
-import materialReducer from '../features/materialSlice';
 import productReducer from '../features/productSlice';
+import materialReducer from '../features/materialSlice';
 
 export const store = configureStore({
   reducer: {
-    materials: materialReducer,
     products: productReducer,
+    materials: materialReducer,
   },
 });
 
-// Tipos cruciais para TypeScript no Redux moderno
+// AQUI ESTAVA O ERRO: Precisamos dos 'export' antes do type
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
