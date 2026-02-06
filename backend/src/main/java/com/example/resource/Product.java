@@ -2,6 +2,8 @@ package com.example.resource;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "product")
@@ -16,6 +18,13 @@ public class Product {
 
     @Column(nullable = false)
     private BigDecimal price;
+
+    @OneToMany(
+        mappedBy = "product",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    private List<ProductComponent> components = new ArrayList<>();
 
     public Product() {
     }
@@ -32,6 +41,10 @@ public class Product {
         return price;
     }
 
+    public List<ProductComponent> getComponents() {
+        return components;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -42,5 +55,9 @@ public class Product {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public void setComponents(List<ProductComponent> components) {
+        this.components = components;
     }
 }
