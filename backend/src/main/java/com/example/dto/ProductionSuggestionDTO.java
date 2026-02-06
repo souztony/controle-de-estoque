@@ -1,18 +1,23 @@
-package com.example.dto; // O pacote deve bater com a pasta
+package com.example.dto;
 
 import java.math.BigDecimal;
 
 public class ProductionSuggestionDTO {
-    public String productName;
-    public Integer quantityPossible;
-    public BigDecimal unitPrice;
-    public BigDecimal totalValue;
+    private String productName;
+    private Integer quantity;
+    private BigDecimal unitPrice;
+    private BigDecimal totalPrice;
 
-    public ProductionSuggestionDTO(String productName, Integer quantityPossible, BigDecimal unitPrice) {
+    public ProductionSuggestionDTO(String productName, Integer quantity, BigDecimal unitPrice) {
         this.productName = productName;
-        this.quantityPossible = quantityPossible;
+        this.quantity = quantity;
         this.unitPrice = unitPrice;
-        // Calcula o valor total automaticamente
-        this.totalValue = unitPrice.multiply(new BigDecimal(quantityPossible));
+        this.totalPrice = unitPrice.multiply(new BigDecimal(quantity));
     }
+
+    // Getters para o teste e para o Jackson (JSON)
+    public String getProductName() { return productName; }
+    public Integer getQuantity() { return quantity; }
+    public BigDecimal getUnitPrice() { return unitPrice; }
+    public BigDecimal getTotalPrice() { return totalPrice; }
 }

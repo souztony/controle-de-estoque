@@ -7,9 +7,9 @@ import com.example.dto.ProductionSuggestionDTO;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 import java.math.BigDecimal;
+import java.math.RoundingMode; // Importação necessária para o novo padrão
+import java.util.*;
 
 @ApplicationScoped
 public class ProductionService {
@@ -18,40 +18,50 @@ public class ProductionService {
     ProductRepository productRepository;
 
     public List<ProductionSuggestionDTO> calculateProduction() {
-        // Busca produtos do mais caro para o mais barato
         List<Product> products = productRepository.listAll(Sort.by("price").descending());
+        
+        Map<Long, BigDecimal> tempStock = new HashMap<>();
         List<ProductionSuggestionDTO> suggestions = new ArrayList<>();
 
         for (Product p : products) {
-            int maxForThisProduct = Integer.MAX_VALUE;
+            if (p.getComponents() == null || p.getComponents().isEmpty()) continue;
 
-            // Se o método no seu Product.java for getComponents(), mantenha assim.
-            // Se der erro aqui, mude para: p.components
-            if (p.getComponents() == null || p.getComponents().isEmpty()) {
-                continue;
-            }
+            int maxPossibleForThisProduct = Integer.MAX_VALUE;
 
             for (ProductComponent comp : p.getComponents()) {
-                // 1. Pegamos os valores em BigDecimal
-                BigDecimal stockBD = comp.getRawMaterial().getStockQuantity();
-                BigDecimal requiredBD = comp.getRequiredQuantity();
+                Long matId = comp.getRawMaterial().getId();
+                
+                tempStock.putIfAbsent(matId, comp.getRawMaterial().getStockQuantity());
+                
+                BigDecimal available = tempStock.get(matId);
+                BigDecimal required = comp.getRequiredQuantity();
 
-                // 2. Convertemos para 'int' para fazer a divisão de unidades inteiras
-                // Usamos .intValue() para resolver o erro de "Type mismatch"
-                if (requiredBD != null && requiredBD.compareTo(BigDecimal.ZERO) > 0) {
-                    int stock = stockBD.intValue();
-                    int required = requiredBD.intValue();
+                if (required != null && required.compareTo(BigDecimal.ZERO) > 0) {
+                    // CORREÇÃO DOS WARNINGS:
+                    // Usamos RoundingMode.DOWN no lugar de BigDecimal.ROUND_DOWN
+                    int possible = available.divide(required, RoundingMode.DOWN).intValue();
                     
-                    int possible = stock / required;
-
-                    if (possible < maxForThisProduct) {
-                        maxForThisProduct = possible;
+                    if (possible < maxPossibleForThisProduct) {
+                        maxPossibleForThisProduct = possible;
                     }
+                } else {
+                    maxPossibleForThisProduct = 0;
                 }
             }
 
-            if (maxForThisProduct > 0 && maxForThisProduct != Integer.MAX_VALUE) {
-                suggestions.add(new ProductionSuggestionDTO(p.getName(), maxForThisProduct, p.getPrice()));
+            if (maxPossibleForThisProduct > 0 && maxPossibleForThisProduct != Integer.MAX_VALUE) {
+                for (ProductComponent comp : p.getComponents()) {
+                    Long matId = comp.getRawMaterial().getId();
+                    BigDecimal totalConsumed = comp.getRequiredQuantity().multiply(new BigDecimal(maxPossibleForThisProduct));
+                    BigDecimal newStock = tempStock.get(matId).subtract(totalConsumed);
+                    tempStock.put(matId, newStock);
+                }
+                
+                suggestions.add(new ProductionSuggestionDTO(
+                    p.getName(), 
+                    maxPossibleForThisProduct, 
+                    p.getPrice()
+                ));
             }
         }
         return suggestions;
