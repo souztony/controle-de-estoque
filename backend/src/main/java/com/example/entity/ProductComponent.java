@@ -1,4 +1,4 @@
-package com.example.resource;
+package com.example.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;

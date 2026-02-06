@@ -1,6 +1,6 @@
 package com.example.repository;
 
-import com.example.resource.RawMaterial;
+import com.example.entity.RawMaterial;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 

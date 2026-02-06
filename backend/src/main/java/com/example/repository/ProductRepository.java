@@ -1,6 +1,6 @@
 package com.example.repository;
 
-import com.example.resource.Product;
+import com.example.entity.Product;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 

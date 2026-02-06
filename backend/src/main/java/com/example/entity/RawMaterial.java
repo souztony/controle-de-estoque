@@ -1,4 +1,4 @@
-package com.example.resource;
+package com.example.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "product")
-public class Product {
+@Table(name = "raw_material")
+public class RawMaterial {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -16,17 +16,17 @@ public class Product {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(nullable = false)
-    private BigDecimal price;
+    @Column(name = "stock_quantity", nullable = false)
+    private BigDecimal stockQuantity;
 
     @OneToMany(
-        mappedBy = "product",
+        mappedBy = "rawMaterial",
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
     private List<ProductComponent> components = new ArrayList<>();
 
-    public Product() {
+    public RawMaterial() {
     }
 
     public Long getId() {
@@ -37,8 +37,8 @@ public class Product {
         return name;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public BigDecimal getStockQuantity() {
+        return stockQuantity;
     }
 
     public List<ProductComponent> getComponents() {
@@ -53,8 +53,8 @@ public class Product {
         this.name = name;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setStockQuantity(BigDecimal stockQuantity) {
+        this.stockQuantity = stockQuantity;
     }
 
     public void setComponents(List<ProductComponent> components) {

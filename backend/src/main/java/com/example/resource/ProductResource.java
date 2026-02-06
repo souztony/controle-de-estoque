@@ -1,5 +1,6 @@
 package com.example.resource;
 
+import com.example.entity.Product; // IMPORTANTE: Adicione este import
 import com.example.repository.ProductRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -46,6 +47,8 @@ public class ProductResource {
         entity.setName(product.getName());
         entity.setPrice(product.getPrice());
 
+        // No Panache, não precisa chamar 'update', 
+        // as alterações no objeto 'entity' são salvas automaticamente ao fim do @Transactional
         return entity;
     }
 
