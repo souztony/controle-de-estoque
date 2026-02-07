@@ -1,21 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import MaterialsPage from './pages/MaterialsPage';
-
-// Componentes temporários para as rotas que faremos a seguir
-const DashboardPlaceholder = () => (
-  <div className="p-10 text-center">
-    <h2 className="text-2xl font-bold text-gray-800">RF008 - Production Suggestions</h2>
-    <p className="text-gray-500">Coming soon: Calculation of products based on stock.</p>
-  </div>
-);
-
-const ProductsPlaceholder = () => (
-  <div className="p-10 text-center">
-    <h2 className="text-2xl font-bold text-gray-800">RF005/RF007 - Product Management</h2>
-    <p className="text-gray-500">Coming soon: Product CRUD with raw material association.</p>
-  </div>
-);
+import ProductsPage from './pages/ProductsPage';
+import ProductionDashboard from './pages/ProductionDashboard';
 
 function App() {
   return (
@@ -27,9 +14,9 @@ function App() {
         {/* Área de conteúdo que cresce para ocupar a tela */}
         <main className="flex-grow">
           <Routes>
-            <Route path="/" element={<DashboardPlaceholder />} />
+            <Route path="/" element={<ProductionDashboard />} />
             <Route path="/materials" element={<MaterialsPage />} />
-            <Route path="/products" element={<ProductsPlaceholder />} />
+            <Route path="/products" element={<ProductsPage />} />
             
             {/* Rota de fallback caso o usuário digite algo inexistente */}
             <Route path="*" element={

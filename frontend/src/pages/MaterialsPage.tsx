@@ -65,7 +65,10 @@ const MaterialsPage = () => {
                   items.map((item: RawMaterial) => (
                     <tr key={item.id} className="group hover:bg-blue-50/30 transition-colors">
                       <td className="px-6 py-4">
-                        <span className="font-semibold text-gray-800">{item.name}</span>
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">#{item.code}</span>
+                          <span className="font-semibold text-gray-800">{item.name}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">

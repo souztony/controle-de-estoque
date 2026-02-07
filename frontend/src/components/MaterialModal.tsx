@@ -11,7 +11,7 @@ interface Props {
 export const MaterialModal = ({ isOpen, onClose }: Props) => {
   const dispatch = useAppDispatch();
   const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState({ name: '', stockQuantity: 0 });
+  const [formData, setFormData] = useState({ code: '', name: '', stockQuantity: 0 });
 
   if (!isOpen) return null;
 
@@ -19,12 +19,11 @@ export const MaterialModal = ({ isOpen, onClose }: Props) => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      // O ID o Hibernate gera sozinho via Sequence
       await dispatch(addMaterial(formData as any)).unwrap();
       onClose();
-      setFormData({ name: '', stockQuantity: 0 });
+      setFormData({ code: '', name: '', stockQuantity: 0 });
     } catch (error) {
-      alert("Erro ao salvar no banco!");
+      alert("Error saving to database!");
     } finally {
       setIsSaving(false);
     }
@@ -41,6 +40,17 @@ export const MaterialModal = ({ isOpen, onClose }: Props) => {
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Material Code</label>
+            <input 
+              required
+              placeholder="Ex: RAW-001"
+              type="text" 
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              value={formData.code}
+              onChange={(e) => setFormData({...formData, code: e.target.value})}
+            />
+          </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1.5">Material Name</label>
             <input 

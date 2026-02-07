@@ -14,6 +14,9 @@ public class RawMaterial {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    private String code;
+
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(name = "stock_quantity", nullable = false)
@@ -31,6 +34,14 @@ public class RawMaterial {
 
     public Long getId() {
         return id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {

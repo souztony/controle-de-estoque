@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit'; // Corrigido: import type
+import type { PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import type { Product } from '../types/index'; // Corrigido: import type e caminho explícito
+import type { Product } from '../types/index';
 
 const API_URL = 'http://localhost:8080/products';
 
@@ -14,6 +14,16 @@ export const fetchProducts = createAsyncThunk('products/fetch', async () => {
 export const saveProduct = createAsyncThunk('products/save', async (product: Product) => {
   const response = await axios.post<Product>(API_URL, product);
   return response.data;
+});
+
+export const updateProduct = createAsyncThunk('products/update', async (product: Product) => {
+  const response = await axios.put<Product>(`${API_URL}/${product.id}`, product);
+  return response.data;
+});
+
+export const deleteProduct = createAsyncThunk('products/delete', async (id: number) => {
+  await axios.delete(`${API_URL}/${id}`);
+  return id;
 });
 
 interface ProductState {
@@ -41,6 +51,15 @@ const productSlice = createSlice({
       })
       .addCase(saveProduct.fulfilled, (state, action: PayloadAction<Product>) => {
         state.items.push(action.payload);
+      })
+      .addCase(updateProduct.fulfilled, (state, action: PayloadAction<Product>) => {
+        const index = state.items.findIndex(p => p.id === action.payload.id);
+        if (index !== -1) {
+          state.items[index] = action.payload;
+        }
+      })
+      .addCase(deleteProduct.fulfilled, (state, action: PayloadAction<number>) => {
+        state.items = state.items.filter(p => p.id !== action.payload);
       });
   },
 });
