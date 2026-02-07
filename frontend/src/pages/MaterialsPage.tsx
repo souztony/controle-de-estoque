@@ -35,10 +35,8 @@ const MaterialsPage = () => {
       {/* Cabeçalho */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg text-white">
-              <Package size={28} />
-            </div>
+          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <Package className="text-blue-600" />
             Raw Materials
           </h1>
           <p className="text-gray-500 mt-1">Manage your inventory stocks and supplies</p>

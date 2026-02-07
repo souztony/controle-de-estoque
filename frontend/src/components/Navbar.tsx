@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, ShoppingCart, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Menu, X, Box } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -19,8 +19,10 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <span className="text-2xl font-bold bg-blue-600 text-white p-1.5 rounded-lg">AF</span>
-            <span className="ml-3 text-xl font-bold text-gray-800 hidden sm:block">Autoflex Inventory</span>
+            <div className="bg-blue-600 text-white p-2 rounded-lg">
+              <Box size={24} strokeWidth={2.5} />
+            </div>
+            <span className="ml-3 text-xl font-bold text-gray-800 hidden sm:block">Inventory Control</span>
           </div>
 
           {/* Desktop Menu */}
@@ -29,10 +31,10 @@ const Navbar = () => {
               <Link 
                 key={item.path} 
                 to={item.path} 
-                className={`flex items-center gap-2 font-medium transition-colors ${
+                className={`flex items-center gap-2 font-medium transition-colors px-3 py-2 rounded-lg ${
                   isActive(item.path) 
-                    ? 'text-blue-600 bg-blue-50 px-3 py-2 rounded-lg' 
-                    : 'text-gray-600 hover:text-blue-600'
+                    ? 'text-blue-600 bg-blue-50' 
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
                 }`}
               >
                 {item.icon}

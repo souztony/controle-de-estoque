@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchProducts, saveProduct, updateProduct, deleteProduct } from '../features/productSlice';
 import { fetchMaterials } from '../features/materialSlice';
-import { Package, Plus, Trash2, Edit2, X, Save, Layers, Hash } from 'lucide-react';
+import { ShoppingCart, Plus, Trash2, Edit2, X, Save, Layers, Hash } from 'lucide-react';
 import type { Product, ProductComponent } from '../types';
 
 const ProductsPage: React.FC = () => {
@@ -121,14 +121,14 @@ const ProductsPage: React.FC = () => {
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <Package className="text-blue-600" />
+            <ShoppingCart className="text-blue-600" />
             Product Management
           </h1>
           <p className="text-gray-500">Manage your products and their raw material requirements.</p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
         >
           <Plus size={20} />
           New Product

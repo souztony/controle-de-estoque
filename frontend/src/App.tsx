@@ -31,7 +31,7 @@ function App() {
         {/* Rodapé simples para dar um toque profissional ao teste */}
         <footer className="bg-white border-t border-gray-200 py-6">
           <div className="max-w-7xl mx-auto px-4 text-center text-gray-400 text-sm">
-            © 2026 Autoflex Technical Test - Inventory Control System
+            © 2026 Inventory Control System
           </div>
         </footer>
       </div>

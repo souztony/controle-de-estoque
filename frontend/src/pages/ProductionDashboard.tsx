@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { LayoutGrid, TrendingUp, AlertTriangle, CheckCircle2, DollarSign } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, AlertTriangle, CheckCircle2, DollarSign } from 'lucide-react';
 import type { ProductionSuggestion } from '../types';
 
 const ProductionDashboard: React.FC = () => {
@@ -28,7 +28,7 @@ const ProductionDashboard: React.FC = () => {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-          <LayoutGrid className="text-blue-600" />
+          <LayoutDashboard className="text-blue-600" />
           Production Suggestions
         </h1>
         <p className="text-gray-500">Optimized production plan based on current raw material inventory.</p>
