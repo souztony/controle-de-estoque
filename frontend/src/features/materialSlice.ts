@@ -1,19 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
-// Mudamos para o caminho completo do arquivo para não ter erro de resolução
-import type { RawMaterial } from '../types/index'; 
+import { api } from '../api/axios';
+import type { RawMaterial } from '../types/index';
 
-const API_URL = 'http://localhost:8080/raw-materials';
-
+// Busca dados do Quarkus - Adicionado try/catch implícito via Thunk
 export const fetchMaterials = createAsyncThunk('materials/fetch', async () => {
-  const response = await axios.get<RawMaterial[]>(API_URL);
-  return response.data;
+  const { data } = await api.get<RawMaterial[]>('/raw-materials');
+  return data;
 });
 
-export const addMaterial = createAsyncThunk('materials/add', async (material: RawMaterial) => {
-  const response = await axios.post<RawMaterial>(API_URL, material);
-  return response.data;
+// Envia dados para o Quarkus
+export const addMaterial = createAsyncThunk('materials/add', async (material: Partial<RawMaterial>) => {
+  const { data } = await api.post<RawMaterial>('/raw-materials', material);
+  return data;
 });
 
 interface MaterialState {
@@ -32,13 +31,20 @@ const materialSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // Fetch Materials
       .addCase(fetchMaterials.pending, (state) => { 
         state.status = 'loading'; 
       })
       .addCase(fetchMaterials.fulfilled, (state, action: PayloadAction<RawMaterial[]>) => {
         state.status = 'idle';
-        state.items = action.payload;
+        // Garante que items seja sempre um array, mesmo que a API venha vazia
+        state.items = Array.isArray(action.payload) ? action.payload : [];
       })
+      .addCase(fetchMaterials.rejected, (state) => { 
+        state.status = 'failed'; 
+      })
+      
+      // Add Material
       .addCase(addMaterial.fulfilled, (state, action: PayloadAction<RawMaterial>) => {
         state.items.push(action.payload);
       });

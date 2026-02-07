@@ -9,6 +9,5 @@ export const store = configureStore({
   },
 });
 
-// AQUI ESTAVA O ERRO: Precisamos dos 'export' antes do type
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

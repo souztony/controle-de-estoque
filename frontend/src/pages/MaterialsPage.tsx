@@ -1,13 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchMaterials } from '../features/materialSlice';
-import { Package, Plus, Loader2, Edit3 } from 'lucide-react';
-// Importamos o tipo para usar no .map()
+import { Package, Plus, Loader2, Edit3, AlertCircle } from 'lucide-react';
+import { MaterialModal } from '../components/MaterialModal'; // Certifique-se de criar este arquivo
 import type { RawMaterial } from '../types/index';
 
 const MaterialsPage = () => {
   const dispatch = useAppDispatch();
   const { items, status } = useAppSelector((state) => state.materials);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchMaterials());
@@ -27,17 +28,26 @@ const MaterialsPage = () => {
           <p className="text-gray-500 mt-1">Manage your inventory stocks and supplies</p>
         </div>
         
-        <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all shadow-sm active:scale-95">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
+        >
           <Plus size={20} />
           New Material
         </button>
       </div>
 
-      {/* Tabela / Loading */}
+      {/* Tabela / Estados de Carregamento e Erro */}
       {status === 'loading' ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+        <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-500 font-medium text-lg">Loading materials...</p>
+          <p className="text-gray-500 font-medium text-lg">Connecting to API...</p>
+        </div>
+      ) : status === 'failed' ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-red-50 rounded-2xl border border-red-100 text-red-600">
+          <AlertCircle size={48} className="mb-4" />
+          <p className="font-bold text-lg">Failed to load materials</p>
+          <p className="text-sm">Check if your Quarkus backend is running on port 8080.</p>
         </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
@@ -52,7 +62,7 @@ const MaterialsPage = () => {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {items.length > 0 ? (
-                  items.map((item: RawMaterial) => ( // AQUI: Tipamos o parâmetro 'item'
+                  items.map((item: RawMaterial) => (
                     <tr key={item.id} className="group hover:bg-blue-50/30 transition-colors">
                       <td className="px-6 py-4">
                         <span className="font-semibold text-gray-800">{item.name}</span>
@@ -60,11 +70,13 @@ const MaterialsPage = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <span className={`inline-block w-2 h-2 rounded-full ${item.stockQuantity > 0 ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                          <span className="text-gray-600">{item.stockQuantity} units</span>
+                          <span className={`${item.stockQuantity > 0 ? 'text-gray-600' : 'text-red-500 font-medium'}`}>
+                            {item.stockQuantity} units
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all inline-flex items-center gap-1">
+                        <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all inline-flex items-center gap-1 cursor-pointer">
                           <Edit3 size={18} />
                           <span className="text-sm font-medium">Edit</span>
                         </button>
@@ -73,8 +85,11 @@ const MaterialsPage = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="px-6 py-12 text-center text-gray-400 italic">
-                      No materials found. Start by adding a new one.
+                    <td colSpan={3} className="px-6 py-16 text-center text-gray-400">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Package size={40} className="opacity-20" />
+                        <p className="italic font-medium">No materials found in database.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -83,6 +98,12 @@ const MaterialsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Modal de Cadastro */}
+      <MaterialModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 };
