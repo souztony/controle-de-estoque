@@ -34,9 +34,32 @@ public class RawMaterialResource {
     @Transactional
     public RawMaterial create(RawMaterial material) {
         System.out.println("POST /raw-materials - In: " + material.getName());
-        repository.persist(material);
-        System.out.println("POST /raw-materials - Success ID: " + material.getId());
-        return material;
+        try {
+            repository.persist(material);
+            repository.flush(); // Force execution to catch constraints
+            System.out.println("POST /raw-materials - Success ID: " + material.getId());
+            return material;
+        } catch (Exception e) { // Catch generic Exception
+            if (isConstraintViolation(e)) {
+                throw new WebApplicationException(
+                    Response.status(409).entity("Material code or name already exists.").build()
+                );
+            }
+            e.printStackTrace();
+            throw new WebApplicationException("Error creating material: " + e.getMessage(), 500);
+        }
+    }
+
+    private boolean isConstraintViolation(Exception e) {
+        Throwable t = e;
+        while (t != null) {
+            if (t.getClass().getName().contains("ConstraintViolationException") || 
+                t instanceof org.hibernate.exception.ConstraintViolationException) {
+                return true;
+            }
+            t = t.getCause();
+        }
+        return false;
     }
 
     @PUT
@@ -58,6 +81,11 @@ public class RawMaterialResource {
             System.out.println("PUT /raw-materials/" + id + " - Success");
             return entity;
         } catch (Exception e) {
+            if (isConstraintViolation(e)) {
+                throw new WebApplicationException(
+                    Response.status(409).entity("Material code or name already exists.").build()
+                );
+            }
             System.err.println("ERROR in PUT /raw-materials/" + id + ": " + e.getMessage());
             e.printStackTrace();
             throw new WebApplicationException("Error updating material: " + e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);

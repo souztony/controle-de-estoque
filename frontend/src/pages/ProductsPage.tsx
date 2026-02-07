@@ -104,8 +104,9 @@ const ProductsPage: React.FC = () => {
         await dispatch(saveProduct(productPayload)).unwrap();
       }
       handleCloseModal();
-    } catch (error) {
-      alert("Error saving product! Please check if the name or code is already in use.");
+    } catch (error: any) {
+       // Redux toolkit rejectWithValue passes the error message as the error object here
+       alert(error || "Error saving product!");
     }
   };
 

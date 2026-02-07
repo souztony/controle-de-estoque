@@ -4,24 +4,40 @@ import { api } from '../api/axios';
 import type { Product } from '../types/index';
 
 // Ações Assíncronas (Thunks)
-export const fetchProducts = createAsyncThunk('products/fetch', async () => {
-  const response = await api.get<Product[]>('/products');
-  return response.data;
+export const fetchProducts = createAsyncThunk('products/fetch', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get<Product[]>('/products');
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
-export const saveProduct = createAsyncThunk('products/save', async (product: Product) => {
-  const response = await api.post<Product>('/products', product);
-  return response.data;
+export const saveProduct = createAsyncThunk('products/save', async (product: Product, { rejectWithValue }) => {
+  try {
+    const response = await api.post<Product>('/products', product);
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
-export const updateProduct = createAsyncThunk('products/update', async (product: Product) => {
-  const response = await api.put<Product>(`/products/${product.id}`, product);
-  return response.data;
+export const updateProduct = createAsyncThunk('products/update', async (product: Product, { rejectWithValue }) => {
+  try {
+    const response = await api.put<Product>(`/products/${product.id}`, product);
+    return response.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
-export const deleteProduct = createAsyncThunk('products/delete', async (id: number) => {
-  await api.delete(`/products/${id}`);
-  return id;
+export const deleteProduct = createAsyncThunk('products/delete', async (id: number, { rejectWithValue }) => {
+  try {
+    await api.delete(`/products/${id}`);
+    return id;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
 interface ProductState {

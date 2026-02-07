@@ -13,7 +13,12 @@ interface Props {
 export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
   const dispatch = useAppDispatch();
   const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState({ code: '', name: '', stockQuantity: 0 });
+  // Use string | number for stockQuantity to allow empty input
+  const [formData, setFormData] = useState<{
+    code: string;
+    name: string;
+    stockQuantity: string | number;
+  }>({ code: '', name: '', stockQuantity: '' });
 
   useEffect(() => {
     if (editingMaterial) {
@@ -23,7 +28,7 @@ export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
         stockQuantity: editingMaterial.stockQuantity
       });
     } else {
-      setFormData({ code: '', name: '', stockQuantity: 0 });
+      setFormData({ code: '', name: '', stockQuantity: '' });
     }
   }, [editingMaterial, isOpen]);
 
@@ -32,16 +37,24 @@ export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    
+    // Convert empty string to 0 for submission
+    const finalData = {
+      ...formData,
+      stockQuantity: formData.stockQuantity === '' ? 0 : Number(formData.stockQuantity)
+    };
+
     try {
       if (editingMaterial) {
-        await dispatch(updateMaterial({ ...editingMaterial, ...formData })).unwrap();
+        await dispatch(updateMaterial({ ...editingMaterial, ...finalData })).unwrap();
       } else {
-        await dispatch(addMaterial(formData as any)).unwrap();
+        await dispatch(addMaterial(finalData as any)).unwrap();
       }
       onClose();
-      setFormData({ code: '', name: '', stockQuantity: 0 });
-    } catch (error) {
-      alert("Error saving to database!");
+      setFormData({ code: '', name: '', stockQuantity: '' });
+    } catch (error: any) {
+      // Redux toolkit rejectWithValue passes the error message as the error object here
+      alert(error || "Error saving to database!");
     } finally {
       setIsSaving(false);
     }
@@ -90,7 +103,8 @@ export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
               type="number" 
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
               value={formData.stockQuantity}
-              onChange={(e) => setFormData({...formData, stockQuantity: Number(e.target.value)})}
+              onChange={(e) => setFormData({...formData, stockQuantity: e.target.value})}
+              placeholder="0"
             />
           </div>
 

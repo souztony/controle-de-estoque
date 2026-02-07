@@ -3,26 +3,42 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { api } from '../api/axios';
 import type { RawMaterial } from '../types/index';
 
-// Busca dados do Quarkus - Adicionado try/catch implícito via Thunk
-export const fetchMaterials = createAsyncThunk('materials/fetch', async () => {
-  const { data } = await api.get<RawMaterial[]>('/raw-materials');
-  return data;
+// Busca dados do Quarkus
+export const fetchMaterials = createAsyncThunk('materials/fetch', async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await api.get<RawMaterial[]>('/raw-materials');
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
 // Envia dados para o Quarkus
-export const addMaterial = createAsyncThunk('materials/add', async (material: Partial<RawMaterial>) => {
-  const { data } = await api.post<RawMaterial>('/raw-materials', material);
-  return data;
+export const addMaterial = createAsyncThunk('materials/add', async (material: Partial<RawMaterial>, { rejectWithValue }) => {
+  try {
+    const { data } = await api.post<RawMaterial>('/raw-materials', material);
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
-export const updateMaterial = createAsyncThunk('materials/update', async (material: RawMaterial) => {
-  const { data } = await api.put<RawMaterial>(`/raw-materials/${material.id}`, material);
-  return data;
+export const updateMaterial = createAsyncThunk('materials/update', async (material: RawMaterial, { rejectWithValue }) => {
+  try {
+    const { data } = await api.put<RawMaterial>(`/raw-materials/${material.id}`, material);
+    return data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
-export const deleteMaterial = createAsyncThunk('materials/delete', async (id: number) => {
-  await api.delete(`/raw-materials/${id}`);
-  return id;
+export const deleteMaterial = createAsyncThunk('materials/delete', async (id: number, { rejectWithValue }) => {
+  try {
+    await api.delete(`/raw-materials/${id}`);
+    return id;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
 });
 
 interface MaterialState {

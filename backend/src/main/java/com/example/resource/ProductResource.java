@@ -34,15 +34,37 @@ public class ProductResource {
     @POST
     @Transactional
     public Response create(Product product) {
-        System.out.println("POST /products - In: " + product.getName() + ", Code: " + product.getCode() + ", Price: " + product.getPrice());
-        if (product.getComponents() != null) {
-            for (var component : product.getComponents()) {
-                component.setProduct(product);
+        System.out.println("POST /products - In: " + product.getName());
+        try {
+            if (product.getComponents() != null) {
+                for (var component : product.getComponents()) {
+                    component.setProduct(product);
+                }
             }
+            repository.persist(product);
+            repository.flush();
+            return Response.status(Response.Status.CREATED).entity(product).build();
+        } catch (Exception e) { // Catch generic Exception to handle all cases
+             if (isConstraintViolation(e)) {
+                throw new WebApplicationException(
+                    Response.status(409).entity("Product code or name already exists.").build()
+                );
+            }
+            e.printStackTrace(); // Log full stack trace for debugging if needed
+            throw new WebApplicationException("Error creating product: " + e.getMessage(), 500);
         }
-        repository.persist(product);
-        System.out.println("POST /products - Persisted ID: " + product.getId());
-        return Response.status(Response.Status.CREATED).entity(product).build();
+    }
+
+    private boolean isConstraintViolation(Exception e) {
+        Throwable t = e;
+        while (t != null) {
+            if (t.getClass().getName().contains("ConstraintViolationException") || 
+                t instanceof org.hibernate.exception.ConstraintViolationException) {
+                return true;
+            }
+            t = t.getCause();
+        }
+        return false;
     }
 
     @PUT
@@ -76,6 +98,11 @@ public class ProductResource {
             System.out.println("PUT /products/" + id + " - Success");
             return entity;
         } catch (Exception e) {
+            if (isConstraintViolation(e)) {
+                throw new WebApplicationException(
+                    Response.status(409).entity("Product code or name already exists.").build()
+                );
+            }
             System.err.println("ERROR in PUT /products/" + id + ": " + e.getMessage());
             e.printStackTrace();
             throw new WebApplicationException("Error updating product: " + e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);

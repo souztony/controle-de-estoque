@@ -1,15 +1,18 @@
 import { LayoutDashboard, Package, ShoppingCart, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const navItems = [
     { label: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/' },
     { label: 'Materials', icon: <Package size={20} />, path: '/materials' },
     { label: 'Products', icon: <ShoppingCart size={20} />, path: '/products' },
   ];
+
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
@@ -26,7 +29,11 @@ const Navbar = () => {
               <Link 
                 key={item.path} 
                 to={item.path} 
-                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 font-medium transition-colors"
+                className={`flex items-center gap-2 font-medium transition-colors ${
+                  isActive(item.path) 
+                    ? 'text-blue-600 bg-blue-50 px-3 py-2 rounded-lg' 
+                    : 'text-gray-600 hover:text-blue-600'
+                }`}
               >
                 {item.icon}
                 {item.label}
@@ -51,7 +58,11 @@ const Navbar = () => {
               key={item.path} 
               to={item.path} 
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-3 text-gray-700 font-medium p-2 hover:bg-blue-50 rounded-lg"
+              className={`flex items-center gap-3 font-medium p-2 rounded-lg transition-colors ${
+                isActive(item.path)
+                  ? 'bg-blue-50 text-blue-600'
+                  : 'text-gray-700 hover:bg-gray-50'
+              }`}
             >
               {item.icon}
               {item.label}
