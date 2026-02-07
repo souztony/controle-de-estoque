@@ -1,28 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import { api } from '../api/axios';
 import type { Product } from '../types/index';
-
-const API_URL = 'http://localhost:8080/products';
 
 // Ações Assíncronas (Thunks)
 export const fetchProducts = createAsyncThunk('products/fetch', async () => {
-  const response = await axios.get<Product[]>(API_URL);
+  const response = await api.get<Product[]>('/products');
   return response.data;
 });
 
 export const saveProduct = createAsyncThunk('products/save', async (product: Product) => {
-  const response = await axios.post<Product>(API_URL, product);
+  const response = await api.post<Product>('/products', product);
   return response.data;
 });
 
 export const updateProduct = createAsyncThunk('products/update', async (product: Product) => {
-  const response = await axios.put<Product>(`${API_URL}/${product.id}`, product);
+  const response = await api.put<Product>(`/products/${product.id}`, product);
   return response.data;
 });
 
 export const deleteProduct = createAsyncThunk('products/delete', async (id: number) => {
-  await axios.delete(`${API_URL}/${id}`);
+  await api.delete(`/products/${id}`);
   return id;
 });
 

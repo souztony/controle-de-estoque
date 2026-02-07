@@ -6,11 +6,13 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/raw-materials")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@jakarta.enterprise.context.ApplicationScoped
 public class RawMaterialResource {
 
     @Inject
@@ -31,7 +33,9 @@ public class RawMaterialResource {
     @POST
     @Transactional
     public RawMaterial create(RawMaterial material) {
+        System.out.println("POST /raw-materials - In: " + material.getName());
         repository.persist(material);
+        System.out.println("POST /raw-materials - Success ID: " + material.getId());
         return material;
     }
 
@@ -39,14 +43,25 @@ public class RawMaterialResource {
     @Path("/{id}")
     @Transactional
     public RawMaterial update(@PathParam("id") Long id, RawMaterial material) {
-        RawMaterial entity = repository.findByIdOptional(id)
-                .orElseThrow(() -> new NotFoundException("Raw material not found"));
+        System.out.println("PUT /raw-materials/" + id + " - In: " + material.getName());
+        try {
+            RawMaterial entity = repository.findByIdOptional(id)
+                    .orElseThrow(() -> new NotFoundException("Raw material not found"));
 
-        // Atualiza os dados da matéria-prima
-        entity.setName(material.getName());
-        entity.setStockQuantity(material.getStockQuantity());
+            // Atualiza os dados da matéria-prima
+            entity.setCode(material.getCode());
+            entity.setName(material.getName());
+            entity.setStockQuantity(material.getStockQuantity());
+            
+            repository.flush(); // Força a persistência para detectar violações de constraint
 
-        return entity;
+            System.out.println("PUT /raw-materials/" + id + " - Success");
+            return entity;
+        } catch (Exception e) {
+            System.err.println("ERROR in PUT /raw-materials/" + id + ": " + e.getMessage());
+            e.printStackTrace();
+            throw new WebApplicationException("Error updating material: " + e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DELETE

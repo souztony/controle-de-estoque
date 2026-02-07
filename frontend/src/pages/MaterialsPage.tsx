@@ -1,18 +1,34 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { fetchMaterials } from '../features/materialSlice';
-import { Package, Plus, Loader2, Edit3, AlertCircle } from 'lucide-react';
-import { MaterialModal } from '../components/MaterialModal'; // Certifique-se de criar este arquivo
+import { fetchMaterials, deleteMaterial } from '../features/materialSlice';
+import { Package, Plus, Loader2, Edit3, AlertCircle, Trash2 } from 'lucide-react';
+import { MaterialModal } from '../components/MaterialModal';
 import type { RawMaterial } from '../types/index';
 
 const MaterialsPage = () => {
   const dispatch = useAppDispatch();
   const { items, status } = useAppSelector((state) => state.materials);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<RawMaterial | null>(null);
 
   useEffect(() => {
     dispatch(fetchMaterials());
   }, [dispatch]);
+
+  const handleOpenModal = (material?: RawMaterial) => {
+    setEditingMaterial(material || null);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (window.confirm('Are you sure you want to delete this material?')) {
+      try {
+        await dispatch(deleteMaterial(id)).unwrap();
+      } catch (error) {
+        alert("Error deleting material. It might be used by a product.");
+      }
+    }
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto min-h-screen bg-gray-50/50">
@@ -29,7 +45,7 @@ const MaterialsPage = () => {
         </div>
         
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => handleOpenModal()}
           className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl transition-all shadow-md active:scale-95 cursor-pointer"
         >
           <Plus size={20} />
@@ -79,10 +95,20 @@ const MaterialsPage = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all inline-flex items-center gap-1 cursor-pointer">
-                          <Edit3 size={18} />
-                          <span className="text-sm font-medium">Edit</span>
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => handleOpenModal(item)}
+                            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Edit3 size={18} />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(item.id!)}
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -106,6 +132,7 @@ const MaterialsPage = () => {
       <MaterialModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
+        editingMaterial={editingMaterial}
       />
     </div>
   );

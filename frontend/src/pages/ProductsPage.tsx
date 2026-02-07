@@ -33,12 +33,12 @@ const ProductsPage: React.FC = () => {
     if (product) {
       setEditingProduct(product);
       setFormData({
-        code: product.code,
-        name: product.name,
-        price: product.price.toString(),
-        components: product.components.map(c => ({
-          rawMaterialId: c.rawMaterial.id?.toString() || '',
-          requiredQuantity: c.requiredQuantity.toString()
+        code: product.code || '',
+        name: product.name || '',
+        price: (product.price ?? '').toString(),
+        components: (product.components || []).map(c => ({
+          rawMaterialId: c.rawMaterial?.id?.toString() || '',
+          requiredQuantity: (c.requiredQuantity ?? '').toString()
         }))
       });
     } else {
@@ -73,7 +73,7 @@ const ProductsPage: React.FC = () => {
     setFormData({ ...formData, components: newComponents });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     const formattedComponents: ProductComponent[] = formData.components
@@ -91,16 +91,22 @@ const ProductsPage: React.FC = () => {
       id: editingProduct?.id,
       code: formData.code,
       name: formData.name,
-      price: parseFloat(formData.price),
+      price: isNaN(parseFloat(formData.price)) ? 0 : parseFloat(formData.price),
       components: formattedComponents
     };
 
-    if (editingProduct) {
-      dispatch(updateProduct(productPayload));
-    } else {
-      dispatch(saveProduct(productPayload));
+    console.log("Saving product:", JSON.stringify(productPayload, null, 2));
+
+    try {
+      if (editingProduct) {
+        await dispatch(updateProduct(productPayload)).unwrap();
+      } else {
+        await dispatch(saveProduct(productPayload)).unwrap();
+      }
+      handleCloseModal();
+    } catch (error) {
+      alert("Error saving product! Please check if the name or code is already in use.");
     }
-    handleCloseModal();
   };
 
   const handleDelete = (id: number) => {
@@ -134,18 +140,18 @@ const ProductsPage: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
-            <div key={product.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+          {Array.isArray(products) && products.map((product) => (
+            <div key={product.id || `temp-${product.code}-${product.name}`} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
               <div className="p-5">
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex flex-col">
                     <span className="text-xs font-bold text-gray-400 flex items-center gap-1 uppercase tracking-tighter">
-                      <Hash size={12} /> {product.code}
+                      <Hash size={12} /> {product.code || 'N/A'}
                     </span>
                     <h3 className="text-xl font-semibold text-gray-800">{product.name}</h3>
                   </div>
                   <span className="text-lg font-bold text-green-600">
-                    ${product.price.toFixed(2)}
+                    ${(product.price ?? 0).toFixed(2)}
                   </span>
                 </div>
                 
@@ -154,13 +160,13 @@ const ProductsPage: React.FC = () => {
                     <Layers size={14} /> Components
                   </h4>
                   <ul className="space-y-1">
-                    {product.components.map((comp, idx) => (
+                    {product.components?.map((comp, idx) => (
                       <li key={idx} className="text-sm text-gray-600 flex justify-between">
-                        <span>{comp.rawMaterial.name}</span>
+                        <span>{comp.rawMaterial?.name || 'N/A'}</span>
                         <span className="font-medium text-gray-900">{comp.requiredQuantity} units</span>
                       </li>
                     ))}
-                    {product.components.length === 0 && (
+                    {(!product.components || product.components.length === 0) && (
                       <li className="text-sm text-gray-400 italic">No components defined.</li>
                     )}
                   </ul>

@@ -1,5 +1,7 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -18,10 +20,12 @@ public class ProductComponent {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id")
+    @JsonBackReference(value="product-component")
     private Product product;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "raw_material_id")
+    @JsonIgnoreProperties("components")
     private RawMaterial rawMaterial;
 
     @Column(name = "required_quantity", nullable = false)

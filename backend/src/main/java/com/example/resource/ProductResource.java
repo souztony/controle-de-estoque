@@ -13,6 +13,7 @@ import java.util.List;
 @Path("/products")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@jakarta.enterprise.context.ApplicationScoped
 public class ProductResource {
 
     @Inject
@@ -33,7 +34,14 @@ public class ProductResource {
     @POST
     @Transactional
     public Response create(Product product) {
+        System.out.println("POST /products - In: " + product.getName() + ", Code: " + product.getCode() + ", Price: " + product.getPrice());
+        if (product.getComponents() != null) {
+            for (var component : product.getComponents()) {
+                component.setProduct(product);
+            }
+        }
         repository.persist(product);
+        System.out.println("POST /products - Persisted ID: " + product.getId());
         return Response.status(Response.Status.CREATED).entity(product).build();
     }
 
@@ -41,15 +49,37 @@ public class ProductResource {
     @Path("/{id}")
     @Transactional
     public Product update(@PathParam("id") Long id, Product product) {
-        Product entity = repository.findByIdOptional(id)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+        System.out.println("PUT /products/" + id + " - In: " + product.getName());
+        try {
+            Product entity = repository.findByIdOptional(id)
+                    .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        entity.setName(product.getName());
-        entity.setPrice(product.getPrice());
+            entity.setCode(product.getCode());
+            entity.setName(product.getName());
+            entity.setPrice(product.getPrice());
 
-        // No Panache, não precisa chamar 'update', 
-        // as alterações no objeto 'entity' são salvas automaticamente ao fim do @Transactional
-        return entity;
+            // Limpa componentes antigos e força o flush para evitar violação de constraint
+            entity.getComponents().clear();
+            repository.flush();
+            
+            if (product.getComponents() != null) {
+                for (var component : product.getComponents()) {
+                    component.setProduct(entity);
+                    // Garante que o RawMaterial tenha apenas o ID para evitar problemas de merge
+                    if (component.getRawMaterial() != null && component.getRawMaterial().getId() != null) {
+                         // Opcional: recarregar o material do banco se necessário, mas passar o objeto com ID deve bastar
+                    }
+                    entity.getComponents().add(component);
+                }
+            }
+
+            System.out.println("PUT /products/" + id + " - Success");
+            return entity;
+        } catch (Exception e) {
+            System.err.println("ERROR in PUT /products/" + id + ": " + e.getMessage());
+            e.printStackTrace();
+            throw new WebApplicationException("Error updating product: " + e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DELETE

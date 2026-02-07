@@ -90,10 +90,10 @@ const ProductionDashboard: React.FC = () => {
                         </span>
                       </td>
                       <td className="px-6 py-5 text-right font-medium text-gray-600">
-                        ${s.unitPrice.toFixed(2)}
+                        ${(s.unitPrice ?? 0).toFixed(2)}
                       </td>
                       <td className="px-6 py-5 text-right font-black text-blue-600">
-                        ${s.totalPrice.toFixed(2)}
+                        ${(s.totalPrice ?? 0).toFixed(2)}
                       </td>
                     </tr>
                   ))}

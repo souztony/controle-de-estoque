@@ -1,17 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppDispatch } from '../store/hooks';
-import { addMaterial } from '../features/materialSlice';
+import { addMaterial, updateMaterial } from '../features/materialSlice';
 import { X, Save, Loader2 } from 'lucide-react';
+import type { RawMaterial } from '../types/index';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  editingMaterial?: RawMaterial | null;
 }
 
-export const MaterialModal = ({ isOpen, onClose }: Props) => {
+export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
   const dispatch = useAppDispatch();
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({ code: '', name: '', stockQuantity: 0 });
+
+  useEffect(() => {
+    if (editingMaterial) {
+      setFormData({
+        code: editingMaterial.code,
+        name: editingMaterial.name,
+        stockQuantity: editingMaterial.stockQuantity
+      });
+    } else {
+      setFormData({ code: '', name: '', stockQuantity: 0 });
+    }
+  }, [editingMaterial, isOpen]);
 
   if (!isOpen) return null;
 
@@ -19,7 +33,11 @@ export const MaterialModal = ({ isOpen, onClose }: Props) => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await dispatch(addMaterial(formData as any)).unwrap();
+      if (editingMaterial) {
+        await dispatch(updateMaterial({ ...editingMaterial, ...formData })).unwrap();
+      } else {
+        await dispatch(addMaterial(formData as any)).unwrap();
+      }
       onClose();
       setFormData({ code: '', name: '', stockQuantity: 0 });
     } catch (error) {
@@ -33,7 +51,9 @@ export const MaterialModal = ({ isOpen, onClose }: Props) => {
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
       <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="flex justify-between items-center p-6 border-b border-gray-100">
-          <h2 className="text-xl font-bold text-gray-800">New Material</h2>
+          <h2 className="text-xl font-bold text-gray-800">
+            {editingMaterial ? 'Edit Material' : 'New Material'}
+          </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
             <X size={24} />
           </button>
@@ -88,7 +108,7 @@ export const MaterialModal = ({ isOpen, onClose }: Props) => {
               className="flex-[2] bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-blue-200 disabled:opacity-70 cursor-pointer"
             >
               {isSaving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-              {isSaving ? 'Saving...' : 'Save Material'}
+              {isSaving ? 'Saving...' : (editingMaterial ? 'Update Material' : 'Save Material')}
             </button>
           </div>
         </form>

@@ -27,6 +27,7 @@ public class RawMaterial {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<ProductComponent> components = new ArrayList<>();
 
     public RawMaterial() {

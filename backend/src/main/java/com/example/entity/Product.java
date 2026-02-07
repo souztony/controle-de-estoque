@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class Product {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
+    @JsonManagedReference(value="product-component")
     private List<ProductComponent> components = new ArrayList<>();
 
     public Product() {
