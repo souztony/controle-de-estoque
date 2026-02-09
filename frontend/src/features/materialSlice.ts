@@ -3,7 +3,6 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { api } from '../api/axios';
 import type { RawMaterial } from '../types/index';
 
-// Busca dados do Quarkus
 export const fetchMaterials = createAsyncThunk('materials/fetch', async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.get<RawMaterial[]>('/raw-materials');
@@ -13,7 +12,6 @@ export const fetchMaterials = createAsyncThunk('materials/fetch', async (_, { re
   }
 });
 
-// Envia dados para o Quarkus
 export const addMaterial = createAsyncThunk('materials/add', async (material: Partial<RawMaterial>, { rejectWithValue }) => {
   try {
     const { data } = await api.post<RawMaterial>('/raw-materials', material);
@@ -57,25 +55,21 @@ const materialSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Fetch Materials
       .addCase(fetchMaterials.pending, (state) => { 
         state.status = 'loading'; 
       })
       .addCase(fetchMaterials.fulfilled, (state, action: PayloadAction<RawMaterial[]>) => {
         state.status = 'idle';
-        // Garante que items seja sempre um array, mesmo que a API venha vazia
         state.items = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetchMaterials.rejected, (state) => { 
         state.status = 'failed'; 
       })
       
-      // Add Material
       .addCase(addMaterial.fulfilled, (state, action: PayloadAction<RawMaterial>) => {
         state.items.push(action.payload);
       })
       
-      // Update Material
       .addCase(updateMaterial.fulfilled, (state, action: PayloadAction<RawMaterial>) => {
         const index = state.items.findIndex(item => item.id === action.payload.id);
         if (index !== -1) {
@@ -83,7 +77,6 @@ const materialSlice = createSlice({
         }
       })
 
-      // Delete Material
       .addCase(deleteMaterial.fulfilled, (state, action: PayloadAction<number>) => {
         state.items = state.items.filter(item => item.id !== action.payload);
       });

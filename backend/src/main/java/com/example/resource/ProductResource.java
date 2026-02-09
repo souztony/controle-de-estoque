@@ -1,6 +1,6 @@
 package com.example.resource;
 
-import com.example.entity.Product; // IMPORTANTE: Adicione este import
+import com.example.entity.Product;
 import com.example.repository.ProductRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -44,13 +44,13 @@ public class ProductResource {
             repository.persist(product);
             repository.flush();
             return Response.status(Response.Status.CREATED).entity(product).build();
-        } catch (Exception e) { // Catch generic Exception to handle all cases
+        } catch (Exception e) {
              if (isConstraintViolation(e)) {
                 throw new WebApplicationException(
                     Response.status(409).entity("Product code or name already exists.").build()
                 );
             }
-            e.printStackTrace(); // Log full stack trace for debugging if needed
+            e.printStackTrace();
             throw new WebApplicationException("Error creating product: " + e.getMessage(), 500);
         }
     }
@@ -80,16 +80,13 @@ public class ProductResource {
             entity.setName(product.getName());
             entity.setPrice(product.getPrice());
 
-            // Limpa componentes antigos e força o flush para evitar violação de constraint
             entity.getComponents().clear();
             repository.flush();
             
             if (product.getComponents() != null) {
                 for (var component : product.getComponents()) {
                     component.setProduct(entity);
-                    // Garante que o RawMaterial tenha apenas o ID para evitar problemas de merge
                     if (component.getRawMaterial() != null && component.getRawMaterial().getId() != null) {
-                         // Opcional: recarregar o material do banco se necessário, mas passar o objeto com ID deve bastar
                     }
                     entity.getComponents().add(component);
                 }

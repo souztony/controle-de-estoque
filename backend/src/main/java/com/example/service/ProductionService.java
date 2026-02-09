@@ -8,7 +8,7 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
-import java.math.RoundingMode; // Importação necessária para o novo padrão
+import java.math.RoundingMode;
 import java.util.*;
 
 @ApplicationScoped
@@ -37,8 +37,6 @@ public class ProductionService {
                 BigDecimal required = comp.getRequiredQuantity();
 
                 if (required != null && required.compareTo(BigDecimal.ZERO) > 0) {
-                    // CORREÇÃO DOS WARNINGS:
-                    // Usamos RoundingMode.DOWN no lugar de BigDecimal.ROUND_DOWN
                     int possible = available.divide(required, RoundingMode.DOWN).intValue();
                     
                     if (possible < maxPossibleForThisProduct) {

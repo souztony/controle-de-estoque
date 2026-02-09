@@ -13,7 +13,6 @@ interface Props {
 export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
   const dispatch = useAppDispatch();
   const [isSaving, setIsSaving] = useState(false);
-  // Use string | number for stockQuantity to allow empty input
   const [formData, setFormData] = useState<{
     code: string;
     name: string;
@@ -38,7 +37,6 @@ export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
     e.preventDefault();
     setIsSaving(true);
     
-    // Convert empty string to 0 for submission
     const finalData = {
       ...formData,
       stockQuantity: formData.stockQuantity === '' ? 0 : Number(formData.stockQuantity)
@@ -53,7 +51,6 @@ export const MaterialModal = ({ isOpen, onClose, editingMaterial }: Props) => {
       onClose();
       setFormData({ code: '', name: '', stockQuantity: '' });
     } catch (error: any) {
-      // Redux toolkit rejectWithValue passes the error message as the error object here
       alert(error || "Error saving to database!");
     } finally {
       setIsSaving(false);

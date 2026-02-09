@@ -3,7 +3,6 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { api } from '../api/axios';
 import type { Product } from '../types/index';
 
-// Ações Assíncronas (Thunks)
 export const fetchProducts = createAsyncThunk('products/fetch', async (_, { rejectWithValue }) => {
   try {
     const response = await api.get<Product[]>('/products');

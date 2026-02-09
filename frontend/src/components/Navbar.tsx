@@ -25,7 +25,6 @@ const Navbar = () => {
             <span className="ml-3 text-xl font-bold text-gray-800 hidden sm:block">Inventory Control</span>
           </div>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link 
@@ -43,7 +42,6 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Button */}
           <div className="md:hidden flex items-center">
             <button onClick={() => setIsOpen(!isOpen)} className="text-gray-600">
               {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -52,7 +50,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden bg-white border-t border-gray-50 p-4 space-y-4 shadow-lg">
           {navItems.map((item) => (

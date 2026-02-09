@@ -1,6 +1,6 @@
 package com.example.resource;
 
-import com.example.entity.RawMaterial; // IMPORTANTE: Adicione este import para reconhecer a classe
+import com.example.entity.RawMaterial;
 import com.example.repository.RawMaterialRepository;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -36,10 +36,10 @@ public class RawMaterialResource {
         System.out.println("POST /raw-materials - In: " + material.getName());
         try {
             repository.persist(material);
-            repository.flush(); // Force execution to catch constraints
+            repository.flush();
             System.out.println("POST /raw-materials - Success ID: " + material.getId());
             return material;
-        } catch (Exception e) { // Catch generic Exception
+        } catch (Exception e) {
             if (isConstraintViolation(e)) {
                 throw new WebApplicationException(
                     Response.status(409).entity("Material code or name already exists.").build()
@@ -71,12 +71,11 @@ public class RawMaterialResource {
             RawMaterial entity = repository.findByIdOptional(id)
                     .orElseThrow(() -> new NotFoundException("Raw material not found"));
 
-            // Atualiza os dados da matéria-prima
             entity.setCode(material.getCode());
             entity.setName(material.getName());
             entity.setStockQuantity(material.getStockQuantity());
             
-            repository.flush(); // Força a persistência para detectar violações de constraint
+            repository.flush();
 
             System.out.println("PUT /raw-materials/" + id + " - Success");
             return entity;

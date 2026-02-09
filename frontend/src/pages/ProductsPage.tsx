@@ -105,7 +105,6 @@ const ProductsPage: React.FC = () => {
       }
       handleCloseModal();
     } catch (error: any) {
-       // Redux toolkit rejectWithValue passes the error message as the error object here
        alert(error || "Error saving product!");
     }
   };
@@ -193,7 +192,6 @@ const ProductsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">

@@ -32,7 +32,6 @@ const MaterialsPage = () => {
 
   return (
     <div className="p-6 max-w-7xl mx-auto min-h-screen bg-gray-50/50">
-      {/* Cabeçalho */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
@@ -51,7 +50,6 @@ const MaterialsPage = () => {
         </button>
       </div>
 
-      {/* Tabela / Estados de Carregamento e Erro */}
       {status === 'loading' ? (
         <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-gray-100 shadow-sm">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
@@ -126,7 +124,6 @@ const MaterialsPage = () => {
         </div>
       )}
 
-      {/* Modal de Cadastro */}
       <MaterialModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 

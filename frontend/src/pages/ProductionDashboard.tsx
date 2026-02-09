@@ -40,7 +40,6 @@ const ProductionDashboard: React.FC = () => {
         </div>
       ) : (
         <div className="space-y-8">
-          {/* Summary Card */}
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white shadow-xl">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="flex items-center gap-4">
@@ -62,7 +61,6 @@ const ProductionDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Suggestions Table */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="p-6 border-b border-gray-100">
               <h3 className="text-xl font-bold text-gray-800">Producible Items</h3>

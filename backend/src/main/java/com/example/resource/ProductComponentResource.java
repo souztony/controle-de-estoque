@@ -42,12 +42,10 @@ public class ProductComponentResource {
     @Transactional
     public ProductComponent create(ProductComponent component) {
 
-        // Valida se o produto existe no banco antes de vincular
         Product product = productRepository.findByIdOptional(
                 component.getProduct().getId()
         ).orElseThrow(() -> new NotFoundException("Product not found"));
 
-        // Valida se a matéria-prima existe no banco antes de vincular
         RawMaterial rawMaterial = rawMaterialRepository.findByIdOptional(
                 component.getRawMaterial().getId()
         ).orElseThrow(() -> new NotFoundException("Raw material not found"));

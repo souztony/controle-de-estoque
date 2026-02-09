@@ -21,7 +21,6 @@ public class CORSFilter implements ContainerResponseFilter {
         responseContext.getHeaders().add("Access-Control-Allow-Headers", "*");
         responseContext.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
         
-        // Se for uma requisição OPTIONS, garante que o status seja 200
         if ("OPTIONS".equalsIgnoreCase(requestContext.getMethod())) {
             responseContext.setStatus(200);
         }
